@@ -1,3 +1,67 @@
+# =============================================================================================================================
+#                                            - RESPONSE SELECTION ARCHITECTURE -
+#
+#      to be used as pseudo code for app/bot/listen.rb, methods will be defined in a Brain/ Module Class app/bot/brain.rb
+# =============================================================================================================================
+#
+#   1. INTENT CLASSIFICATION - Intents are actions(verbs) that the user wants the bot to perform
+#
+#      1.1 Read User Message (read_user_message)
+#
+#      1.2 Relate it to Context (the context should be of a likely user story to happen) (contextualize)
+#
+#
+#         * This means we will have to store messages to generate context.
+#
+#
+#         [ACTION REQUIRED] - needs the Context and Intent models to be defined ASAP, since they will be used in all steps
+#
+# -----------------------------------------------------------------------------------------------------------------------------
+#
+#   2. ENTITY RECOGNITION - Entities are descriptive (adverbs - how, when, where, why, how much) of the action to be performed
+#
+#      2.1 Get the entities from User message using Natural Language Processing (facebook + Wit.ai) (get_entities(message))
+#
+#
+#         * Entities are what Wit.ai can help us get.
+#
+#
+#         [QUESTION TO RESEARCH] Can wit.ai use context and intent to get better entities ?
+#
+#         [TO CONFIRM] Should we use an Entity model that looks like facebook's messenger responses?
+#
+# -----------------------------------------------------------------------------------------------------------------------------
+#
+#   3. GET RESPONSE CANDIDATES
+#
+#      3.1 Relate with Context again (contextualize)
+#
+#      3.2 Read Intent (intent = {})
+#
+#      3.3 Read Entities (entities = {})
+#
+#      3.4 Search through of answers (search_answers(context, intent = {}, entities = {})).
+#
+#
+#         * Relate the context with entities and intents to figure out how to query the replies table in DB
+#
+#
+# -----------------------------------------------------------------------------------------------------------------------------
+#
+#   4. SELECT RESPONSES
+#
+#      4.1 Read Context again (contextualize)
+#
+#
+#         * Send reply to user if one response has certainty < 80 %
+#
+#         * If not, send all possible responses to user (in order of certainty), asking which he wants to do.
+#
+# =============================================================================================================================
+
+
+
+
 require "facebook/messenger"
 require "facebook/bot/util"
 
@@ -5,49 +69,6 @@ require "facebook/bot/util"
 include Facebook::Messenger
 
 Facebook::Messenger::Subscriptions.subscribe(access_token: ENV['FB_ACCESS_TOKEN'])
-
-
-# -----------------------------------------------------------------------------------------------------------------------------
-#                                                 - RESPONSE SELECTION ARCHITECTURE -
-# -----------------------------------------------------------------------------------------------------------------------------
-#  this can be used as pseudo code for listen
-# -----------------------------------------------------------------------------------------------------------------------------
-#
-#   1. INTENT CLASSIFICATION - Intents are actions(verbs) that the user wants the bot to performance
-#
-#      1.1 Read User Message
-#      1.2 Relate it to Context (the context should be of a likely user story to happen)
-#
-#         This means we will have to store messages to generate context
-#
-# -----------------------------------------------------------------------------------------------------------------------------
-#
-#   2. ENTITY RECOGNITION - Entities are descriptive (adverbs - how, when, why, how much) of the action to be performed
-#
-#      2.1 Get the entities from User message using NLP (facebook + Wit.ai)
-#
-#         entities are what Wit.ai can help us get.
-#
-# -----------------------------------------------------------------------------------------------------------------------------
-#
-#   3. GET RESPONDE CANDIDATES
-
-#      3.1 Read Context again
-#      3.2 Read Intent
-#      3.3 Read Entities
-#      3.4 Search through of answers.
-#
-#         Relate the context with entities and intents to figure out how to query the reply DB
-#
-# -----------------------------------------------------------------------------------------------------------------------------
-#
-#   4. SELECT RESPONSES
-#
-#      4.1 Read Context again
-#         Send reply to user if one response has certainty < 80 %
-#         If not, send all possible responses to user (in order of certainty), asking which he wants to do.
-#
-# -----------------------------------------------------------------------------------------------------------------------------
 
 
 
