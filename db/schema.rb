@@ -10,10 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170905163137) do
+ActiveRecord::Schema.define(version: 20171002185102) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "intents", force: :cascade do |t|
+    t.bigint "intent_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "tag"
+    t.text "message"
+    t.string "payload"
+    t.string "content_type"
+    t.string "title"
+    t.string "payload_type"
+    t.string "subtitle"
+    t.string "image"
+    t.string "url"
+    t.index ["intent_id"], name: "index_intents_on_intent_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -39,4 +55,5 @@ ActiveRecord::Schema.define(version: 20170905163137) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "intents", "intents"
 end

@@ -1,11 +1,11 @@
-require 'facebook/messenger/version'
-require 'facebook/messenger/error'
-require 'facebook/messenger/subscriptions'
-require 'facebook/messenger/profile'
-require 'facebook/messenger/bot'
-require 'facebook/messenger/server'
-require 'facebook/messenger/configuration'
-require 'facebook/messenger/incoming'
+require 'facebook/messenger/version.rb'
+require 'facebook/messenger/error.rb'
+require 'facebook/messenger/subscriptions.rb'
+require 'facebook/messenger/profile.rb'
+require 'facebook/messenger/bot.rb'
+require 'facebook/messenger/server.rb'
+require 'facebook/messenger/configuration.rb'
+require 'facebook/messenger/incoming.rb'
 
 module Facebook
   # All the code for this gem resides in this module.

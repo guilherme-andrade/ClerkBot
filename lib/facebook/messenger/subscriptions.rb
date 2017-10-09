@@ -17,7 +17,6 @@ module Facebook
           access_token: access_token
         }
         puts access_token
-        byebug
         raise_errors(response)
 
         true
