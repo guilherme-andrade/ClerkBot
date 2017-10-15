@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171002185102) do
+ActiveRecord::Schema.define(version: 20171015183433) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,14 +21,15 @@ ActiveRecord::Schema.define(version: 20171002185102) do
     t.datetime "updated_at", null: false
     t.string "tag"
     t.text "message"
-    t.string "payload"
     t.string "content_type"
     t.string "title"
-    t.string "payload_type"
     t.string "subtitle"
     t.string "image"
     t.string "url"
+    t.string "reference"
+    t.string "option_types"
     t.index ["intent_id"], name: "index_intents_on_intent_id"
+    t.index ["reference"], name: "index_intents_on_reference"
   end
 
   create_table "users", force: :cascade do |t|

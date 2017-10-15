@@ -6,12 +6,71 @@ include Facebook::Messenger
 
 #Facebook::Messenger::Subscriptions.subscribe(access_token: ENV['FB_ACCESS_TOKEN'])
 
+Facebook::Messenger::Profile.set({
+  greeting: [
+    {
+      locale: 'default',
+      text: 'Welcome to your new bot overlord!'
+    },
+    {
+      locale: 'fr_FR',
+      text: 'Bienvenue dans le bot du Wagon !'
+    }
+  ]
+}, access_token: ENV['FB_ACCESS_TOKEN'])
 
 
+Facebook::Messenger::Profile.set({
+  get_started: {
+    payload: 'home'
+  }
+}, access_token: ENV['FB_ACCESS_TOKEN'])
 
+Facebook::Messenger::Profile.set({
+  persistent_menu: [
+    {
+      locale: 'default',
+      composer_input_disabled: false,
+      call_to_actions: [
+        {
+          title: 'My Account',
+          type: 'nested',
+          call_to_actions: [
+            {
+              title: 'What\'s a chatbot?',
+              type: 'postback',
+              payload: 'EXTERMINATE'
+            },
+            {
+              title: 'History',
+              type: 'postback',
+              payload: 'HISTORY_PAYLOAD'
+            },
+            {
+              title: 'Contact Info',
+              type: 'postback',
+              payload: 'CONTACT_INFO_PAYLOAD'
+            }
+          ]
+        },
+        {
+          type: 'web_url',
+          title: 'Get some help',
+          url: 'https://github.com/hyperoslo/facebook-messenger',
+          webview_height_ratio: 'full'
+        }
+      ]
+    },
+    {
+      locale: 'zh_CN',
+      composer_input_disabled: false
+    }
+  ]
+}, access_token: ENV['FB_ACCESS_TOKEN'])
 
 # Make the bot act on received message
 Bot.on :message do |message|
+  p message
   message.mark_seen
   message.typing_on
   answer = Brain.new(message).select_answer
@@ -27,17 +86,19 @@ Bot.on :message do |message|
   #   ]
   # )
   message.typing_off
+  p answer
 end
 
 
 # Make the bot act if user selected option
 Bot.on :postback do |postback|
-  byebug
+  p postback
   postback.mark_seen
   postback.typing_on
-  answer = Brain.new(postback).select_postback
+  answer = Brain.new(postback).select_answer
   postback.reply(answer)
   postback.typing_off
+  p answer
 end
 
 

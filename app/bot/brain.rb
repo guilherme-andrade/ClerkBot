@@ -14,17 +14,21 @@ class Brain
 # =============================================================================================================================
   def initialize(message)
     @message = message
-    @payload = message.quick_reply
-    @text =  message.text
     @user = message.sender
+    if message.is_a? Facebook::Messenger::Incoming::Postback
+      @payload = message.payload
+    else
+      @text =  message.text
+      @payload = message.quick_reply
+    end
   end
 #
 #
 # 1. INTENT CLASSIFICATION - Intents are actions(verbs) that the user wants the bot to perform
   def classify_intent
 #
-#    1.1 Read User Message (read_user_message)
-    intent = get_intent(@message)
+#    1.1 Get the intent from message
+    @intent = Intent.find_by(reference: @payload)
 #
 #
 #    1.2 Relate it to Context (the context should be of a likely user story to happen) (contextualize)
@@ -34,7 +38,6 @@ class Brain
 #
 #
 #       [ACTION REQUIRED] - needs the Context and Intent models to be defined ASAP, since they will be used in all steps
-    return intent
   end
 #
 # -----------------------------------------------------------------------------------------------------------------------------
@@ -86,12 +89,10 @@ class Brain
     if @payload
 #   4.1 If @message is a message => when user clicks an option
 #
-#     4.1.1
-      intent = classify_intent
+      classify_intent
 #
-#
-#     4.1.2 Get the answer linked to intent
-      answer = intent.prepare_message
+#     4.1.1 Get the answer linked to intent
+      answer = @intent.prepare_message
 #
       return answer
 #
@@ -125,7 +126,7 @@ class Brain
 #
 #
 #
-  def get_intent(message)
+  def get_intent
 #    checks if message matches any intent's tags with a high certainty ratio
 #    asks which option is best if not sure and gives option to talk to a real person
   end

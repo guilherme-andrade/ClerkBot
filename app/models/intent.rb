@@ -2,26 +2,26 @@ class Intent < ApplicationRecord
   belongs_to :parent_intent, class_name: 'Intent', foreign_key: "intent_id", optional: true
   has_many :child_intents, class_name: 'Intent', foreign_key: "intent_id", dependent: :nullify
 
-  validates_presence_of :payload, :on => :create, :message => "payload missing! without a key, this intent won't be referenced to any point in thee conversation tree!"
-  validates_uniqueness_of :payload, :on => :create, :message => "There is already a payload with %s value in the DB", scope: :parent_intent
+  validates_presence_of :reference, :on => :create, :message => "reference missing! without a key, this intent won't be referenced to any point in thee conversation tree!"
+  validates_uniqueness_of :reference, :on => :create, :message => "There is already a reference with %s value in the DB", scope: :parent_intent
 
-  validates_presence_of :payload_type, :on => :create, :message => "payload type missing! without type, the bot won't know how to show your message to the user!"
-  validates_inclusion_of :payload_type, :in => %w( quick_reply button template none web_url postback ), :on => :create, :message => "payload type %s is not included in the list"
+  validates_presence_of :option_types, :on => :create, :message => "option types missing! without type, the bot won't know how to show your message to the user!"
+  validates_inclusion_of :option_types, :in => ["quick replies", "buttons", "templates", "none", "web url", "postback"], :on => :create, :message => "option types %s is not included in the list"
 
-  validates_presence_of :url, :on => :create, :message => "can't be blank", if: { self.payload_type == "template" }
+  validates_presence_of :url, :on => :create, :message => "can't be blank", if: :is_template?
     # the intent needs to be turned into a message where the text or attachment printed
     # comes from the parent, and the options given come from the children.
 
   def prepare_message
-   case self.payload_type
-    when "quick reply"
-      intent.to_message_with_quick_replies
-    when "button"
-      intent.to_message_with_buttons
-    when "template"
-      intent.to_message_with_templates
+   case self.option_types
+    when "quick replies"
+      self.to_message_with_quick_replies
+    when "buttons"
+      self.to_message_with_buttons
+    when "templates"
+      self.to_message_with_templates
     when "none"
-      intent.to_simple_message
+      self.to_simple_message
     end
   end
 
@@ -39,8 +39,8 @@ class Intent < ApplicationRecord
     self.child_intents.map do |intent|
       {
         content_type: 'text',
-        title: self.title,
-        payload: self.payload
+        title: intent.title,
+        payload: intent.reference
       }
     end
   end
@@ -66,9 +66,9 @@ class Intent < ApplicationRecord
     self.child_intents.map do |intent|
       {
         type: 'postback',
-        title: self.title,
-        payload: self.payload,
-        url: self.url
+        title: intent.title,
+        payload: intent.reference,
+        url: intent.url
       }
     end
   end
@@ -79,7 +79,7 @@ class Intent < ApplicationRecord
   def to_message_with_templates
     {
       attachment:{
-        type: self.payload_type,
+        type: self.option_types,
         payload: {
           template_type: "generic",
           elements: self.get_templates
@@ -96,7 +96,7 @@ class Intent < ApplicationRecord
         image_url: intent.message,
         subtitle: intent.subtitle,
         default_action: {
-          type: intent.payload_type,
+          type: intent.option_types,
           url: intent.image,
           messenger_extensions: true,
           webview_height_ratio: "tall",
@@ -104,7 +104,7 @@ class Intent < ApplicationRecord
         },
         buttons: intent.get_buttons
       }
-    ]
+    end
   end
 
 
@@ -114,5 +114,10 @@ class Intent < ApplicationRecord
     {
       text: self.message
     }
+  end
+
+
+  def is_template?
+    self.option_types == "template"
   end
 end
